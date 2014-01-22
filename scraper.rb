@@ -1,3 +1,4 @@
+require 'scraperwiki'
 require 'mechanize'
 require 'date'
 
@@ -10,7 +11,7 @@ page.at(:table).search(:tr).each_with_index do |r,i|
 
   council_reference = r.search(:td)[0].inner_text.gsub(/\u00a0/,'')
 
-  if (ScraperWiki.select("* from swdata where `council_reference`='#{council_reference}'").empty? rescue true)
+  if (ScraperWiki.select("* from data where `council_reference`='#{council_reference}'").empty? rescue true)
     detail_page_url = r.at(:a).attr(:href)
     begin
       detail_page = agent.get detail_page_url
