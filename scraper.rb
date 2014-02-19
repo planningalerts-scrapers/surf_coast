@@ -20,11 +20,9 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       next
     end
 
-    on_notice_from = nil    
-    on_notice_from = Date.parse(r.search(:td)[3].inner_text.split('-')[0]) rescue true
-
-    on_notice_to = nil
-    on_notice_to = Date.parse(r.search(:td)[3].inner_text.split('-')[1]) rescue true
+    matches = r.search(:td)[3].inner_text.split(' to ')
+    on_notice_from = Date.parse(matches[0])
+    on_notice_to = Date.parse(matches[1])
 
     record = {
       council_reference: council_reference,
