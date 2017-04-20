@@ -1,9 +1,11 @@
 require 'scraperwiki'
 require 'mechanize'
-require 'date'
+
+url = 'https://www.surfcoast.vic.gov.au/My_Property/Building_Planning/Planning/Applications_On_Public_Exhibition'
 
 agent = Mechanize.new
-url = 'http://www.surfcoast.vic.gov.au/My_Property/Building_Planning/Planning/Applications_On_Public_Exhibition'
+agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
 page = agent.get url
 
 page.at(:table).search(:tr).each_with_index do |r,i|
@@ -11,7 +13,7 @@ page.at(:table).search(:tr).each_with_index do |r,i|
 
   council_reference = r.search(:td)[0].inner_text.gsub(/\u00a0/,'')
 
-  if (ScraperWiki.select("* from swdata where `council_reference`='#{council_reference}'").empty? rescue true)
+  if (ScraperWiki.select("* from data where `council_reference`='#{council_reference}'").empty? rescue true)
     detail_page_url = r.at(:a).attr(:href)
     begin
       detail_page = agent.get detail_page_url
@@ -31,7 +33,7 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       on_notice_to: on_notice_to,
       description: detail_page.at('.general_content').at(:p).at(:strong).next.inner_text.strip,
       info_url: detail_page_url,
-      comment_url: detail_page_url,
+      comment_url: "info@surfcoast.vic.gov.au",
       date_scraped: Date.today
     }
 
@@ -39,5 +41,5 @@ page.at(:table).search(:tr).each_with_index do |r,i|
   else
     puts "Skipping already saved record " + council_reference
   end
- end
+end
 
