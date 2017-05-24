@@ -37,6 +37,8 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       date_scraped: Date.today
     }
 
+    puts "Saving record " + council_reference + ", " + record[:address]
+#     puts record
     ScraperWiki.save_sqlite([:council_reference], record)
   else
     puts "Skipping already saved record " + council_reference
