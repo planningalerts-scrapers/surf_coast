@@ -22,10 +22,10 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       next
     end
 
-    puts r.search("//span[@class='.display-date']").text
-    puts r.search("//span[@class='.display-date']").inner_text
+    puts r.search("//span[@class='display-date']").text
+    puts r.search("//span[@class='display-date']").inner_text
     on_notice_from = ''
-    on_notice_to = Date.strptime(r.search("//span[@class='.display-date']").text, '%-d %b %Y')
+    on_notice_to = Date.strptime(r.search("//span[@class='display-date']").text, '%-d %b %Y')
 
     record = {
       council_reference: council_reference,
