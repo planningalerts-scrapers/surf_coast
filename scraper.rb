@@ -25,7 +25,7 @@ page.at(:table).search(:tr).each_with_index do |r,i|
     puts r.search(:td)[2].text
     puts r.search(:td)[3].text
 
-    matches = r.search(:td)[3].text.split('&nbsp;')
+    matches = r.search(:td)[3].inner_text.split('\u00a0')
     on_notice_from = ''
     on_notice_to = Date.parse(matches[2])
 
