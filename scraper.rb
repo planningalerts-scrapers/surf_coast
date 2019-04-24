@@ -23,7 +23,7 @@ page.at(:table).search(:tr).each_with_index do |r,i|
     end
 
     on_notice_from = ''
-    on_notice_to = Date.parse(r.search(':span').at('.display-date').inner_text)
+    on_notice_to = Date.parse(r.search(:span).at('.display-date').inner_text)
 
     record = {
       council_reference: council_reference,
