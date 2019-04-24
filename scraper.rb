@@ -24,7 +24,7 @@ page.at(:table).search(:tr).each_with_index do |r,i|
 
     matches = r.search(:td)[3].inner_text.split(/\u00a0/)
     on_notice_from = ''
-    on_notice_to = Date.parse(matches[2])
+    on_notice_to = Date.parse(matches[1])
 
     record = {
       council_reference: council_reference,
