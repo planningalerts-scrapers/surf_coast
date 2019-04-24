@@ -22,7 +22,7 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       next
     end
 
-    matches = r.search(:td)[3].inner_text.strip.split(/\u00a0/)
+    matches = r.search(:td)[3].inner_text.strip.gsub(/\u00a0/, ' ').split(' ')
     on_notice_from = ''
     on_notice_to = Date.parse(matches[1])
 
