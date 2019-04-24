@@ -22,9 +22,8 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       next
     end
 
-    matches = r.search(:td)[3].inner_text.split(' to ')
-    on_notice_from = Date.parse(matches[0])
-    on_notice_to = Date.parse(matches[1])
+    on_notice_from = ''
+    on_notice_to = Date.parse(r.search(:span.display-date)[0].inner_text)
 
     record = {
       council_reference: council_reference,
