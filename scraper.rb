@@ -23,8 +23,6 @@ page.at(:table).search(:tr).each_with_index do |r,i|
     end
 
     matches = r.search(:td)[3].inner_text.split(/\u00a0/)
-    puts matches
-    
     on_notice_from = ''
     on_notice_to = Date.parse(matches[2])
 
@@ -33,9 +31,9 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       address: detail_page.at(:h1).inner_text.strip + ", VIC",
       on_notice_from: on_notice_from,
       on_notice_to: on_notice_to,
-      description: detail_page.search('div.general_content').inner_text.split(/Proposal:(.*?)Permit No:/m)[1].gsub(/\u00a0/,'').strip,
+      description: detail_page.search('div.main-container').inner_text.split(/Proposal:(.*?)Permit No:/m)[1].gsub(/\u00a0/,'').strip,
       info_url: detail_page_url,
-      comment_url: "info@surfcoast.vic.gov.au",
+      comment_url: "planningapps@surfcoast.vic.gov.au",
       date_scraped: Date.today
     }
 
