@@ -22,6 +22,9 @@ page.at(:table).search(:tr).each_with_index do |r,i|
       next
     end
 
+    puts r.search(:td)[2].inner_text
+    puts r.search(:td)[3].inner_text
+
     matches = r.search(:td)[3].inner_text.split('&nbsp;')
     on_notice_from = ''
     on_notice_to = Date.parse(matches[2])
