@@ -1,7 +1,7 @@
 require 'scraperwiki'
 require 'mechanize'
 
-url = 'https://www.surfcoast.vic.gov.au/My_Property/Building_Planning/Planning/Applications_On_Public_Exhibition'
+url = 'https://www.surfcoast.vic.gov.au/Property/Planning/View-applications-or-make-a-submission/Applications-on-public-exhibition'
 
 agent = Mechanize.new
 agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
