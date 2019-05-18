@@ -13,6 +13,11 @@ page.at(:table).search(:tr).each_with_index do |r,i|
 
   council_reference = r.search(:td)[0].inner_text.gsub(/\u00a0/,'')
 
+  if (r.at(:a).nil?)
+    puts "Ignoring DA #{council_reference} because there is no detail page link"
+    next
+  end
+
   detail_page_url = r.at(:a).attr(:href)
   begin
     detail_page = agent.get detail_page_url
