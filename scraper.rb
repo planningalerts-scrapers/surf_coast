@@ -1,7 +1,7 @@
 require 'scraperwiki'
 require 'mechanize'
 
-url = 'https://www.surfcoast.vic.gov.au/My_Property/Building_Planning/Planning/Applications_On_Public_Exhibition'
+url = 'https://www.surfcoast.vic.gov.au/Property/Planning/View-applications-or-make-a-submission/Applications-on-public-exhibition'
 
 agent = Mechanize.new
 agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -21,18 +21,18 @@ page.at(:table).search(:tr).each_with_index do |r,i|
     next
   end
 
-  matches = r.search(:td)[3].inner_text.split(' to ')
-  on_notice_from = Date.parse(matches[0])
-  on_notice_to = Date.parse(matches[1])
+  matches = r.search(:td)[3].inner_text.strip.gsub(/\u00a0/, ' ').split(' ')
+  on_notice_from = ''
+  on_notice_to = Date.parse(matches[2] + ' ' + matches[3] + ' ' + matches[4])
 
   record = {
     council_reference: council_reference,
     address: detail_page.at(:h1).inner_text.strip + ", VIC",
     on_notice_from: on_notice_from,
     on_notice_to: on_notice_to,
-    description: detail_page.search('div.general_content').inner_text.split(/Proposal:(.*?)Permit No:/m)[1].gsub(/\u00a0/,'').strip,
+    description: detail_page.search('div.main-container').inner_text.split(/Proposal:(.*?)Permit No:/m)[1].gsub(/\u00a0/,'').strip,
     info_url: detail_page_url,
-    comment_url: "info@surfcoast.vic.gov.au",
+    comment_url: "planningapps@surfcoast.vic.gov.au",
     date_scraped: Date.today
   }
 
