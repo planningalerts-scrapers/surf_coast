@@ -1,47 +1,31 @@
 require 'scraperwiki'
 require 'mechanize'
-
-url = 'https://www.surfcoast.vic.gov.au/Property/Planning/View-applications-or-make-a-submission/Applications-on-public-exhibition'
+require 'json'
 
 agent = Mechanize.new
-agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-page = agent.get url
+viewurlbase = "https://eplanning.surfcoast.vic.gov.au/Public/ViewActivity.aspx?refid="
 
-page.at(:table).search(:tr).each_with_index do |r,i|
-  next if i == 0 # Skip the first row header
+page = agent.post(
+  "https://eplanning.surfcoast.vic.gov.au/Services/ReferenceService.svc/Get_PlanningRegister",
+  '{"packet":[{"name":"sEcho","value":1},{"name":"iColumns","value":8},{"name":"sColumns","value":",,,,,,,"},{"name":"iDisplayStart","value":0},{"name":"iDisplayLength","value":10},{"name":"mDataProp_0","value":"ApplicationReference"},{"name":"sSearch_0","value":""},{"name":"bRegex_0","value":false},{"name":"bSearchable_0","value":true},{"name":"bSortable_0","value":true},{"name":"mDataProp_1","value":"LodgedDate_STRING"},{"name":"sSearch_1","value":""},{"name":"bRegex_1","value":false},{"name":"bSearchable_1","value":true},{"name":"bSortable_1","value":true},{"name":"mDataProp_2","value":"DecisionDate_STRING"},{"name":"sSearch_2","value":""},{"name":"bRegex_2","value":false},{"name":"bSearchable_2","value":true},{"name":"bSortable_2","value":true},{"name":"mDataProp_3","value":"SiteAddress"},{"name":"sSearch_3","value":""},{"name":"bRegex_3","value":false},{"name":"bSearchable_3","value":true},{"name":"bSortable_3","value":false},{"name":"mDataProp_4","value":"ReasonForPermit"},{"name":"sSearch_4","value":""},{"name":"bRegex_4","value":false},{"name":"bSearchable_4","value":true},{"name":"bSortable_4","value":true},{"name":"mDataProp_5","value":"Ward"},{"name":"sSearch_5","value":""},{"name":"bRegex_5","value":false},{"name":"bSearchable_5","value":true},{"name":"bSortable_5","value":true},{"name":"mDataProp_6","value":"StatusName"},{"name":"sSearch_6","value":""},{"name":"bRegex_6","value":false},{"name":"bSearchable_6","value":true},{"name":"bSortable_6","value":false},{"name":"mDataProp_7","value":"Actions"},{"name":"sSearch_7","value":""},{"name":"bRegex_7","value":false},{"name":"bSearchable_7","value":true},{"name":"bSortable_7","value":true},{"name":"sSearch","value":""},{"name":"bRegex","value":false},{"name":"iSortCol_0","value":0},{"name":"sSortDir_0","value":"asc"},{"name":"iSortingCols","value":1}]}',
+  {"Content-type" => "application/json"}
+)
+result = JSON.parse(page.body)
+d = JSON.parse(result["d"])
 
-  council_reference = r.search(:td)[0].inner_text.gsub(/\u00a0/,'')
-
-  if (r.at(:a).nil?)
-    puts "Ignoring DA #{council_reference} because there is no detail page link"
-    next
-  end
-
-  detail_page_url = r.at(:a).attr(:href)
-  begin
-    detail_page = agent.get detail_page_url
-  rescue URI::InvalidURIError
-    puts "DA #{council_reference} has a broken detail page, skipping"
-    next
-  end
-
-  matches = r.search(:td)[3].inner_text.strip.gsub(/\u00a0/, ' ').split(' ')
-  on_notice_from = ''
-  on_notice_to = Date.parse(matches[2] + ' ' + matches[3] + ' ' + matches[4])
-
+av = d["ActivityView"]
+# TODO: Add support for paging
+# TODO: Only get applications in a particular date range
+av.each do |r|
   record = {
-    council_reference: council_reference,
-    address: detail_page.at(:h1).inner_text.strip + ", VIC",
-    on_notice_from: on_notice_from,
-    on_notice_to: on_notice_to,
-    description: detail_page.search('div.main-container').inner_text.split(/Proposal:(.*?)Permit No:/m)[1].gsub(/\u00a0/,'').strip,
-    info_url: detail_page_url,
-    comment_url: "planningapps@surfcoast.vic.gov.au",
-    date_scraped: Date.today
+    'council_reference' => r['ApplicationReference'].strip,
+    'address' => r['SiteAddress'],
+    # TODO: I wonder if description should also include "Proposal Type"?
+    'description' => r['ReasonForPermit'],
+    'info_url' => (viewurlbase + URI.encode(r['ApplicationReference'])).to_s,
+    'date_scraped' => Date.today.to_s,
+    'date_received' => Date.strptime(r['LodgedDate_STRING'], "%d-%b-%Y").to_s
   }
-
-  puts "Saving record " + council_reference + ", " + record[:address]
-#     puts record
-  ScraperWiki.save_sqlite([:council_reference], record)
+  pp record
 end
