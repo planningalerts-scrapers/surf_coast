@@ -28,8 +28,8 @@ def scrape_api(url:, start:, length:)
       'address' => r['SiteAddress'],
       'description' => r['ReasonForPermit'],
       'info_url' => "#{url}/Public/ViewActivity.aspx?refid=#{URI.encode(council_reference)}",
-      'date_scraped' => Date.today,
-      'date_received' => Date.strptime(r['LodgedDate_STRING'], "%d-%b-%Y")
+      'date_scraped' => Date.today.to_s,
+      'date_received' => Date.strptime(r['LodgedDate_STRING'], "%d-%b-%Y").to_s
     }
   end  
 end
@@ -42,15 +42,14 @@ def scrape_api_with_paging(url:, start_date:)
   loop do
     results = scrape_api(url: url, start: start, length: max_per_request)
     results.each do |r|
-      yield r if r["date_received"] >= start_date
+      yield r if Date.parse(r["date_received"]) >= start_date
     end
-    break if results.any? { |r| r["date_received"] < start_date }
+    break if results.any? { |r| Date.parse(r["date_received"]) < start_date }
     start += max_per_request
   end
 end
 
 # Get data from the last 28 days
 scrape_api_with_paging(url: "https://eplanning.surfcoast.vic.gov.au", start_date: Date.today - 28) do |record|
-  # TODO: Convert dates back to strings
   pp record
 end
