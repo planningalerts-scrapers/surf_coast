@@ -49,7 +49,8 @@ def scrape_api_with_paging(url:, start_date:)
   end
 end
 
-scrape_api_with_paging(url: "https://eplanning.surfcoast.vic.gov.au", start_date: Date.new(2023, 9, 1)) do |record|
+# Get data from the last 28 days
+scrape_api_with_paging(url: "https://eplanning.surfcoast.vic.gov.au", start_date: Date.today - 28) do |record|
   # TODO: Convert dates back to strings
   pp record
 end
