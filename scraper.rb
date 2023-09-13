@@ -4,10 +4,10 @@ require 'json'
 
 agent = Mechanize.new
 
-viewurlbase = "https://eplanning.surfcoast.vic.gov.au/Public/ViewActivity.aspx?refid="
+url = "https://eplanning.surfcoast.vic.gov.au"
 
 page = agent.post(
-  "https://eplanning.surfcoast.vic.gov.au/Services/ReferenceService.svc/Get_PlanningRegister",
+  "#{url}/Services/ReferenceService.svc/Get_PlanningRegister",
   { "packet" =>
     [
       { "name" => "iDisplayStart", "value" => 0 },
@@ -25,12 +25,13 @@ av = d["ActivityView"]
 # TODO: Add support for paging
 # TODO: Only get applications in a particular date range
 av.each do |r|
+  council_reference = r['ApplicationReference'].strip
   record = {
-    'council_reference' => r['ApplicationReference'].strip,
+    'council_reference' => council_reference,
     'address' => r['SiteAddress'],
     # TODO: I wonder if description should also include "Proposal Type"?
     'description' => r['ReasonForPermit'],
-    'info_url' => (viewurlbase + URI.encode(r['ApplicationReference'])).to_s,
+    'info_url' => "#{url}/Public/ViewActivity.aspx?refid=#{URI.encode(council_reference)}",
     'date_scraped' => Date.today.to_s,
     'date_received' => Date.strptime(r['LodgedDate_STRING'], "%d-%b-%Y").to_s
   }
