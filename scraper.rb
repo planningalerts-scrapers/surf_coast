@@ -8,11 +8,14 @@ viewurlbase = "https://eplanning.surfcoast.vic.gov.au/Public/ViewActivity.aspx?r
 
 page = agent.post(
   "https://eplanning.surfcoast.vic.gov.au/Services/ReferenceService.svc/Get_PlanningRegister",
-  {"packet"=>
-    [{"name"=>"iDisplayStart", "value"=>0},
-     {"name"=>"iDisplayLength", "value"=>10},
-     {"name"=>"iSortCol_0", "value"=>1},
-     {"name"=>"sSortDir_0", "value"=>"desc"}]}.to_json,
+  { "packet" =>
+    [
+      { "name" => "iDisplayStart", "value" => 0 },
+      { "name" => "iDisplayLength", "value" => 10 },
+      { "name" => "iSortCol_0", "value" => 1 },
+      { "name" => "sSortDir_0", "value" => "desc" }
+    ]
+  }.to_json,
   {"Content-type" => "application/json"}
 )
 result = JSON.parse(page.body)
