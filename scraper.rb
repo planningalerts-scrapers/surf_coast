@@ -51,5 +51,6 @@ end
 
 # Get data from the last 28 days
 scrape_api_with_paging(url: "https://eplanning.surfcoast.vic.gov.au", start_date: Date.today - 28) do |record|
-  pp record
+  puts "Storing #{record['council_reference']} - #{record['address']}"
+  ScraperWiki.save_sqlite(['council_reference'], record)
 end
