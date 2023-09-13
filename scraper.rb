@@ -29,7 +29,6 @@ av.each do |r|
   record = {
     'council_reference' => council_reference,
     'address' => r['SiteAddress'],
-    # TODO: I wonder if description should also include "Proposal Type"?
     'description' => r['ReasonForPermit'],
     'info_url' => "#{url}/Public/ViewActivity.aspx?refid=#{URI.encode(council_reference)}",
     'date_scraped' => Date.today.to_s,
