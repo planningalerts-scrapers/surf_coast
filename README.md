@@ -1,3 +1,6 @@
+**Archived as it is replaced by the `multiple_t1_data_table` scraper**
+
+---
 # Surf Coast Shire Council Development Applications for PlanningAlerts
 
 Note that the system on the council side that is showing the development applications
